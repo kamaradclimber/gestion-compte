@@ -58,12 +58,9 @@
         })
         {% if not is_granted("IS_AUTHENTICATED_REMEMBERED") %}
         var barcode_submit_url = "{{ path('check') }}";
+        initSwipeCode(barcode_submit_url);
         {% endif %}
     </script>
-
-    {% if not is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-        <script src="{{ asset('bundles/app/js/barcode.js') }}"></script>
-    {% endif %}
 
     <script type="text/javascript">
         setTimeout(function(){
