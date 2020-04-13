@@ -8,6 +8,7 @@ use App\Entity\Note;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Form\NoteType;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -38,10 +39,10 @@ class AmbassadorController extends Controller
      * @Route("/phone", name="ambassador_phone_list")
      * @Method({"GET","POST"})
      */
-    public function phoneAction(Request $request)
+    public function phoneAction(Request $request, EntityManagerInterface $em)
     {
 
-        $this->denyAccessUnlessGranted('view', $this->get('security.token_storage')->getToken()->getUser());
+        $this->denyAccessUnlessGranted('view', $this->getUser());
 
         $session = new Session();
         $lastYear = new \DateTime('last year');
@@ -70,10 +71,6 @@ class AmbassadorController extends Controller
             ->getForm();
 
         $form->handleRequest($request);
-
-        $em = $this->getDoctrine()->getManager();
-
-        $action = $form->get('action')->getData();
 
         $qb = $em->getRepository("App:Membership")->createQueryBuilder('o');
         $qb = $qb->leftJoin("o.beneficiaries", "b")->addSelect("b")
@@ -225,7 +222,7 @@ class AmbassadorController extends Controller
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newNoteAction(Membership $member, Request $request)
+    public function newNoteAction(Membership $member, Request $request, EntityManagerInterface $em)
     {
         $this->denyAccessUnlessGranted('annotate', $member);
         $session = new Session();
@@ -235,9 +232,8 @@ class AmbassadorController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             $note->setSubject($member);
-            $note->setAuthor($this->get('security.token_storage')->getToken()->getUser());
+            $note->setAuthor($this->getUser());
 
-            $em = $this->getDoctrine()->getManager();
             $em->persist($note);
             $em->flush();
 
