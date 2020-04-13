@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\Event\HelloassoEvent;
 use App\Event\SwipeCardEvent;
 use App\Service\MembershipService;
+use App\Service\ShiftService;
 use App\Twig\Extension\AppExtension;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -82,11 +83,11 @@ class DefaultController extends Controller
                         . "\">ton profil <i class=\"material-icons tiny\">settings</i></a>");
                 }
 
-                if ($this->get('membership_service')->canRegister($membership)) {
+                if ($this->get(MembershipService::class)->canRegister($membership)) {
                     if ($membership->getRegistrations()->count() <= 0) {
                         $session->getFlashBag()->add('warning', 'Pour poursuivre entre ton adhésion en ligne !');
                     }else{
-                        $remainder = $this->get('membership_service')->getRemainder($membership);
+                        $remainder = $this->get(MembershipService::class)->getRemainder($membership);
                         $remainingDays = intval($remainder->format("%R%a"));
                         if ($remainingDays < 0)
                             $session->getFlashBag()->add('error', 'Oups, ton adhésion  a expiré il y a ' . $remainder->format('%a jours') . '... n\'oublie pas de ré-adhérer !');
@@ -184,7 +185,7 @@ class DefaultController extends Controller
         $this->denyAccessUnlessGranted('card_reader', $this->getUser());
         $em = $this->getDoctrine()->getManager();
         $shifts = $em->getRepository('App:Shift')->findInProgress(new \DateTime('now'));
-        $buckets = $this->get('shift_service')->generateShiftBuckets($shifts);
+        $buckets = $this->get(ShiftService::class)->generateShiftBuckets($shifts);
 
         $dynamicContent = $em->getRepository('App:DynamicContent')->findOneByCode('CARD_READER')->getContent();
 
