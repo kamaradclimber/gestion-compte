@@ -294,7 +294,7 @@ class BookingController extends Controller
         $session = $request->getSession();
 
         $content = json_decode($request->getContent());
-        $beneficiaryId = $request->get("beneficiaryId");
+        $beneficiaryId = $content->beneficiaryId;
         $isFixe = $content->typeService;
 
         $beneficiary = $em->getRepository('App:Beneficiary')->find($beneficiaryId);

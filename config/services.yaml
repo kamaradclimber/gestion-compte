@@ -80,7 +80,7 @@ parameters:
         - "%emails.noreply%"
     wiki_keys_url: ~
 
-    use_fly_and_fixed: true
+    use_fly_and_fixed: false
     display_gauge: true
 
 services:
