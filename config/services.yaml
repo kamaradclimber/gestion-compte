@@ -80,8 +80,8 @@ parameters:
         - "%emails.noreply%"
     wiki_keys_url: ~
 
-    use_fly_and_fixed: '%use_fly_and_fixed%'
-    display_gauge: '%display_gauge%'
+    use_fly_and_fixed: true
+    display_gauge: true
 
 services:
     # default configuration for services in *this* file
