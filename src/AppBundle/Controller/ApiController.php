@@ -90,6 +90,33 @@ class ApiController extends Controller
     }
 
     /**
+     * @Route("/oauth/odoo_user", name="odoo_user")
+     * @Method({"GET"})
+     */
+    public function odooUserAction()
+    {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_PREVIOUS_ADMIN')) { //DO NOT ALLOW OAUTH ON LOGIN AS
+            throw $this->createAccessDeniedException();
+        }
+        $response = $this->getUser();
+        if (!$response['user']){
+            return new JsonResponse($response);
+        }
+        /** @var User $current_app_user */
+        $current_app_user = $response['user'];
+        $gravatar_helper = new GravatarHelper(new GravatarApi());
+        return new JsonResponse(array(
+            'id' => $current_app_user->getId(),
+            'user_id' => $current_app_user->getUsername(),
+            'email' => $current_app_user->getEmail(),
+            'name' => $current_app_user->getFirstName().' '.$current_app_user->getlastname()
+        ));
+    }
+
+    /**
      * @Route("/v4/user", name="api_gitlab_user")
      * @Method({"GET"})
      */
